@@ -1,152 +1,85 @@
-Why Click?
+为什么用 Click?
 ==========
 
-There are so many libraries out there for writing command line utilities;
-why does Click exist?
+除此之外还有非常多的命令行工具，为什么还要创建 Click？
 
-This question is easy to answer: because there is not a single command
-line utility for Python out there which ticks the following boxes:
+这个问题很容易回答：因为没有一个除此之外没有一个包含以下特性的单独为 Python 服务的命令行工具：
 
-*   is lazily composable without restrictions
-*   fully follows the Unix command line conventions
-*   supports loading values from environment variables out of the box
-*   supports for prompting of custom values
-*   is fully nestable and composable
-*   works the same in Python 2 and 3
-*   supports file handling out of the box
-*   comes with useful common helpers (getting terminal dimensions,
-    ANSI colors, fetching direct keyboard input, screen clearing,
-    finding config paths, launching apps and editors, etc.)
+*   没有限制可以简单组合
+*   完全遵循 Unix 命令行约定
+*   支持从环境变量中加载值
+*   支持特定值的提示
+*   充分地可嵌套可组合
+*   兼容python 2 和 3
+*   支持外部文件处理
+*   与一些常用的工具帮手结合 (获得 terminal 大小, ANSI 字符颜色, 直接输入按键, 屏幕清理, 获取 config 路径, 启动 apps 和 editors, 等.)
 
-There are many alternatives to Click and you can have a look at them if
-you enjoy them better.  The obvious ones are ``optparse`` and ``argparse``
-from the standard library.
+有很多 Click 的替代选择，如果你更喜欢它们，可以去看一看。最常见的是标准库中的 ``optparse`` 和 ``argparse``。
 
-Click is actually implemented as a wrapper around a mild fork of
-``optparse`` and does not implement any parsing itself.  The reason it's
-not based on ``argparse`` is that ``argparse`` does not allow proper
-nesting of commands by design and has some deficiencies when it comes to
-POSIX compliant argument handling.
+Click 实际上是通过对 ``optparse`` 的一个分支进行封装而实现的，它本身并不进行解析。不基于 ``argparse`` 的原因是 ``argparse`` 从设计上不允许多个命令的嵌套，
+同时在兼容处理 POSIX 参数时有一些不足。
 
-Click is designed to be fun to work with and at the same time not stand in
-your way.  It's not overly flexible either.  Currently, for instance, it
-does not allow you to customize the help pages too much. This is intentional
-because Click is designed to allow you to nest command line utilities.  The
+Click 的设计原则是帮助你在使用过程中更有趣，但是并不是以你的角度出发。它也不太灵活。比如说目前情况下，它不允许你定制太多帮助页面的内容。这样做事故意的，因为
+Click 的设计允许你去嵌套命令行程序。The
 idea is that you can have a system that works together with another system by
 tacking two Click instances together and they will continue working as they
 should.
 
-Too much customizability would break this promise.
+过多的定制会影响这个功能。
 
-Click was written to support the `Flask <http://flask.pocoo.org/>`_
-microframework ecosystem because no tool could provide it with the
-functionality it needed.
+Click 的创建是用来支持 `Flask <http://flask.pocoo.org/>`_
+microframework 生态系统，因为没有工具可以提供需求的功能所需。
 
-To get an understanding of what Click is all about, I strongly recommend
-looking at the :ref:`complex-guide` chapter to see what it's useful for.
+为了弄明白 Click 到底是什么样的？我强烈推荐你去看非常有用的 :ref:`complex-guide` 章节。
 
-Why not Argparse?
+为什么不用 Argparse?
 -----------------
 
-Click is internally based on optparse instead of argparse.  This however
-is an implementation detail that a user does not have to be concerned
-with.  The reason however Click is not using argparse is that it has some
-problematic behaviors that make handling arbitrary command line interfaces
-hard:
+Click 基于 optparse 而不是 argparse。这是因为一个用户不需要关心的实现细节。Click 不使用 argparse 的原因是在处理任意的命令行接口时有一些问题：
 
-*   argparse has built-in magic behavior to guess if something is an
-    argument or an option.  This becomes a problem when dealing with
-    incomplete command lines as it's not possible to know without having a
-    full understanding of the command line how the parser is going to
-    behave.  This goes against Click's ambitions of dispatching to
-    subparsers.
-*   argparse currently does not support disabling of interspersed
-    arguments.  Without this feature it's not possible to safely implement
-    Click's nested parsing nature.
+*   argparse有内置的魔术行为来猜测什么是参数或选项。这使得在处理不完整命令行命令时就成了一个问题，因为没有一个完整的命令行命令就无法得知解析器将如何运行。
+这和 Click 所需的解析器背道相驰。
+*   argparse 目前还不支持禁用 interspersed 参数。没有这个特性将无法保证安全地运行 Click 的嵌套解析特性。
 
-Why not Docopt etc.?
+为什么不使用 Docopt 等?
 --------------------
 
-Docopt and many tools like it are cool in how they work, but very few of
-these tools deal with nesting of commands and composability in a way like
-Click.  To the best of the developer's knowledge, Click is the first
-Python library that aims to create a level of composability of applications
-that goes beyond what the system itself supports.
+Docopt 和其他与其相似的工具它们的运行方式很酷，但是这些工具中几乎没有一个能实现 Click 的嵌套命令和可组合的特性。
+以优秀的开发经验来说，Click 是第一个致力于实现一个应用可组合性级别超越其本身所支持的范围的 Python 库。
 
-Docopt, for instance, acts by parsing your help pages and then parsing
-according to those rules.  The side effect of this is that docopt is quite
-rigid in how it handles the command line interface.  The upside of docopt
-is that it gives you strong control over your help page; the downside is
-that due to this it cannot rewrap your output for the current terminal
-width and it makes translations hard.  On top of that docopt is restricted
-to basic parsing.  It does not handle argument dispatching and callback
-invocation or types.  This means there is a lot of code that needs to be
-written in addition to the basic help page to handle the parsing results.
-
-Most of all, however, it makes composability hard.  While docopt does
-support dispatching to subcommands, it for instance does not directly
-support any kind of automatic subcommand enumeration based on what's
-available or it does not enforce subcommands to work in a consistent way.
-
-This is fine, but it's different from how Click wants to work.  Click aims
-to support fully composable command line user interfaces by doing the
-following:
-
--   Click does not just parse, it also dispatches to the appropriate code.
--   Click has a strong concept of an invocation context that allows
-    subcommands to respond to data from the parent command.
--   Click has strong information available for all parameters and commands
-    so that it can generate unified help pages for the full CLI and to
-    assist the user in converting the input data as necessary.
--   Click has a strong understanding of what types are and can give the user
-    consistent error messages if something goes wrong.  A subcommand
-    written by a different developer will not suddenly die with a
-    different error messsage because it's manually handled.
--   Click has enough meta information available for its whole program
-    that it can evolve over time to improve the user experience without
-    forcing developers to adjust their programs.  For instance, if Click
-    decides to change how help pages are formatted, all Click programs
-    will automatically benefit from this.
-
-The aim of Click is to make composable systems, whereas the aim of docopt
-is to build the most beautiful and hand-crafted command line interfaces.
-These two goals conflict with one another in subtle ways.  Click
-actively prevents people from implementing certain patterns in order to
-achieve unified command line interfaces.  You have very little input on
-reformatting your help pages for instance.
+例如，Docopt 通过解析帮助页面，然后从从中获取规则。这样做的副作用是 docopt 在解析命令行接口时非常的严格。优点是 docopt 给了你对帮助页面很大的控制权利；缺点是
+对当前 terminal 宽度不能够重新包装输出结果，这使得翻译变得很困难。除此以外 docopt 在基本解析上是受限制的。它不能处理参数的执行、回调或类型。这意味着需要另外写
+很多代码来处理帮助页面的解析结果。
 
 
-Why Hardcoded Behaviors?
+然而，最重要的是，它使可组合性变得困难。虽然 docopt 确实支持分配到子命令，但它不直接支持任何基于什么是可用的子命令自动枚举或者它不能使子命令以一致的方式工作。
+
+这样很好，但这和 Click 想做的不一样。Click 致力于通过以下几点完全支持可组合的命令行用户接口：
+
+-   Click 不只是解析，它还将分配合适的代码。
+-   Click 有一个强大的调用上下文概念，这使得子命令响应来自父命令的数据。
+-   Click 具有可用于所有参数和命令的强大信息。这使得它可以对所有的 CLI 生成完整统一的帮助页面，在必要的时候去帮助用户转换输入数据。
+-   Click 能够很好的识别参数类型，如果出错可以为用户提供统一的错误信息。一个由不同的开发者写的子命令在出现问题时不会因为人工处理错误而输出不同的错误信息。
+-   Click 可以提供足够的元信息给整个程序。它可以随着时间的推移而进化，以改善用户体验不需要逼迫开发者去适应他们的程序。例如：如果 Click 决定去改变帮助页面
+的格式化方式，所有的 Click 程序都会自动从中受益。
+
+Click 的目标是创造统一的系统，而 docopt的目标是构建最漂亮的手工制作的命令行接口。这两个目标以微妙的方式相互冲突。
+Click 主动防止用户实现特定的样式，目的是创造一个统一的命令行接口。例如在重新格式化你的帮助页面上你基本上不需要投入任何精力。
+
+为什么使用硬编码的行为?
 ------------------------
 
-The other question is why Click goes away from optparse and hardcodes
-certain behaviors instead of staying configurable.  There are multiple
-reasons for this.  The biggest one is that too much configurability makes
-it hard to achieve a consistent command line experience.
+另一个问题是为什么 Click 与 optparse 背道相驰，使用硬编码特定的行为代替可配置的行为。有很多原因，其中最大的问题是太多的可配置能力使得很难实现一个统一的命令行接口。
 
-The best example for this is optparse's ``callback`` functionality for
-accepting arbitrary number of arguments.  Due to syntactical ambiguities
-on the command line, there is no way to implement fully variadic arguments.
-There are always tradeoffs that need to be made and in case of
-``argparse`` these tradeoffs have been critical enough, that a system like
-Click cannot even be implemented on top of it.
+最好的例子就是 optparse 的 ``callback`` 可以接受任意数量的参数的性质。由于语法歧义
+在命令行上，没有办法实现完全可变参数。总是需要做出权衡，在 ``argparse`` 中这些权衡非常关键，这使得 Click 不能再它的基础上实现。
 
-In this particular case, Click attempts to stay with a handful of accepted
-paradigms for building command line interfaces that can be well documented
-and tested.
+特别是，Click 尝试去保以一种可接受的方式来构建命令行接口，使这些接口可以更好的被测试和文档化。
 
-
-Why No Auto Correction?
+为什么不自动纠正?
 -----------------------
 
-The question came up why Click does not auto correct parameters given that
-even optparse and argparse support automatic expansion of long arguments.
-The reason for this is that it's a liability for backwards compatibility.
-If people start relying on automatically modified parameters and someone
-adds a new parameter in the future, the script might stop working.  These
-kinds of problems are hard to find so Click does not attempt to be magical
-about this.
+问题来自于 Click 为什么不自动纠正给定的参数，甚至于 optparse 和 argparse 都支持自动扩展长参数。
+这主要是因为向后兼容的责任。如果人们开始依赖自动纠正参数，之后某个人又添加了一个新参数，脚本可能会停止工作。这类问题很难去查找，因此 Click 并不想在这上面使用“魔法”。
 
-This sort of behavior however can be implemented on a higher level to
-support things such as explicit aliases.  For more information see
-:ref:`aliases`.
+这种行为可以在更高的层次上实现，用来支持显式别名（explicit aliases）之类的东西。更多的信息你查看 :ref:`aliases`。

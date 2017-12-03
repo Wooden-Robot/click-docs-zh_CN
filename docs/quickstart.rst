@@ -1,4 +1,4 @@
-Quickstart
+快速上手
 ==========
 
 .. currentmodule:: click

@@ -1,4 +1,4 @@
 dea
 *.pyc
 docs/_build/*
-.DS_Store
+/.DS_Store

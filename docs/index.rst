@@ -1,22 +1,17 @@
-Welcome to the Click Documentation
+欢迎查阅 Click 中文文档
 ==================================
 
-Click is a Python package for creating beautiful command line interfaces
-in a composable way with as little code as necessary.  It's the "Command
-Line Interface Creation Kit".  It's highly configurable but comes with
-sensible defaults out of the box.
+Click 是一个利用很少的代码以可组合的方式创造优雅命令行工具接口的 Python 库。 它是高度可配置的，但却有合理默认值的“命令行接口创建工具”。
 
-It aims to make the process of writing command line tools quick and fun
-while also preventing any frustration caused by the inability to implement
-an intended CLI API.
+它致力于将创建命令行工具的过程变的快速而有趣，免除你因无法实现一个 CLI API 的挫败感。
 
-Click in three points:
+Click 的三个特性:
 
--   arbitrary nesting of commands
--   automatic help page generation
--   supports lazy loading of subcommands at runtime
+-   任意嵌套命令
+-   自动生成帮助页面
+-   支持在运行时延迟加载子命令
 
-What does it look like?  Here is an example of a simple Click program:
+那么它到底什么样呢?  下面有一个简单的 Click 项目例子:
 
 .. click:example::
 
@@ -34,27 +29,26 @@ What does it look like?  Here is an example of a simple Click program:
     if __name__ == '__main__':
         hello()
 
-And what it looks like when run:
+当它运行的时候是这样的:
 
 .. click:run::
 
     invoke(hello, ['--count=3'], prog_name='python hello.py', input='John\n')
 
-It automatically generates nicely formatted help pages:
+它会自动生成美观的格式化帮助页面：
 
 .. click:run::
 
     invoke(hello, ['--help'], prog_name='python hello.py')
 
-You can get the library directly from PyPI::
+你可以通过 PyPI 安装它::
 
     pip install click
 
-Documentation Contents
+文档内容
 ----------------------
 
-This part of the documentation guides you through all of the library's
-usage patterns.
+这部分文档将指引你浏览所有 Click 的使用方法。
 
 .. toctree::
    :maxdepth: 2
@@ -80,8 +74,7 @@ usage patterns.
 API Reference
 -------------
 
-If you are looking for information on a specific function, class, or
-method, this part of the documentation is for you.
+如果你想查阅一个特定函数、类或者方法的具体信息，请查阅这部分文档。
 
 .. toctree::
    :maxdepth: 2

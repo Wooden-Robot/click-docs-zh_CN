@@ -219,13 +219,13 @@ Echoing
 
 就目前你写的代码，文件末尾有一个类似这种的代码块: ``if __name__ == '__main__':``。这是一个传统独立的 Python 文件格式。使用 Click 你可以继续这样做, 但使用 setuptools 是一个更好的办法。
 
-有两个主要的原因（还有更多的原因）：
+有两个主要的原因（还有更多其他的原因）：
 
-第一个原因是 setuptools 自动为Windows生成可执行的包装器，所以你的命令行工具也可以在Windows上工作。
+第一个原因是 setuptools 自动为 Windows 生成可执行的包装器，所以你的命令行工具也可以在Windows上工作。
 
-第二个原因是setuptools脚本和Unix上的virtualenv一起工作，而不需要激活virtualenv。这是一个非常有用的概念，它允许你将你的脚本和所有需求绑定到一个虚拟环境中。
+第二个原因是 setuptools 脚本和 Unix 上的 virtualenv 一起工作，而不需要激活 virtualenv 。这是一个非常有用的概念，它允许你将你的脚本和所有依赖绑定到一个虚拟环境中。
 
-Click 同样适用。 接下来的文档将假设你正在通过setuptools写应用程序。
+Click 和它搭配起来简直天衣无缝。 接下来的文档将假设你正在通过 setuptools 写应用程序。
 
-强烈建议去阅读 :ref:`setuptools-integration`
-章节，然后再阅读其余的例子，假设你将使用setuptools。
+假如你将使用setuptools，强烈建议去阅读 :ref:`setuptools-integration`
+章节，然后再阅读其余的例子。

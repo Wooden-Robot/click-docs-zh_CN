@@ -1,6 +1,6 @@
 .. _options:
 
-Options
+选项
 =======
 
 .. currentmodule:: click

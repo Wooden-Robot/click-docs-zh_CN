@@ -1,4 +1,4 @@
-Parameters
+参数
 ==========
 
 .. currentmodule:: click

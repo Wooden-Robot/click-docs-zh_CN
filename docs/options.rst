@@ -1,23 +1,17 @@
 .. _options:
 
-Options
+选项
 =======
 
 .. currentmodule:: click
 
-Adding options to commands can be accomplished by the :func:`option`
-decorator.  Since options can come in various different versions, there
-are a ton of parameters to configure their behavior. Options in click are
-distinct from :ref:`positional arguments <arguments>`.
+通过 :func:`option` 装饰器可以给命令增加选项。通过配置参数来控制不同的选项。Click 中的选项不同于 :ref:`位置参数 <arguments>`。
 
-Basic Value Options
+基本的值选项
 -------------------
 
-The most basic option is a value option.  These options accept one
-argument which is a value.  If no type is provided, the type of the default
-value is used.  If no default value is provided, the type is assumed to be
-:data:`STRING`.  By default, the name of the parameter is the first long
-option defined; otherwise the first short one is used.
+最基本的选项是值选项。这种类型的选项接受一个是值得参数。如果没有指定值的类型，那么将使用默认类型 :data:`STRING`。默认情况下，参数的名称为第一个
+长选项，如果没有长选项则为第一个短选项。
 
 .. click:example::
 
@@ -26,21 +20,18 @@ option defined; otherwise the first short one is used.
     def dots(n):
         click.echo('.' * n)
 
-And on the command line:
+在命令行中运行:
 
 .. click:run::
 
    invoke(dots, args=['--n=2'])
 
-In this case the option is of type :data:`INT` because the default value
-is an integer.
+这上述例子中选项值的类型是 :data:`INT`，因为值的默认值为数字。
 
-Multi Value Options
+多个值的选项
 -------------------
 
-Sometimes, you have options that take more than one argument.  For options,
-only a fixed number of arguments is supported.  This can be configured by
-the ``nargs`` parameter.  The values are then stored as a tuple.
+有时候，你需要有多个值得选项。这种选项只支持固定数量的参数。通过 ``nargs`` 参数来配置。多个值将被放入一个元组（tuple）中。 
 
 .. click:example::
 
@@ -49,7 +40,7 @@ the ``nargs`` parameter.  The values are then stored as a tuple.
     def findme(pos):
         click.echo('%s / %s' % pos)
 
-And on the command line:
+在命令行中运行:
 
 .. click:run::
 
@@ -57,15 +48,13 @@ And on the command line:
 
 .. _tuple-type:
 
-Tuples as Multi Value Options
+使用元组（tuple）代替多个值的选项
 -----------------------------
 
 .. versionadded:: 4.0
 
-As you can see that by using `nargs` set to a specific number each item in
-the resulting tuple is of the same type.  This might not be what you want.
-Commonly you might want to use different types for different indexes in
-the tuple.  For this you can directly specify a tuple as type:
+正如你所看到的，使用 `nargs` 来设置一个每个值都是数字的选项，得到的元组（tuple）中都是一样的数字类型。这可能不是你想要的。
+通常情况下，你希望元组中包含不同类型的值。你可以直接使用下列的特殊元组达成目的：
 
 .. click:example::
 
@@ -74,15 +63,13 @@ the tuple.  For this you can directly specify a tuple as type:
     def putitem(item):
         click.echo('name=%s id=%d' % item)
 
-And on the command line:
+在命令行中运行:
 
 .. click:run::
 
     invoke(putitem, args=['--item', 'peter', '1338'])
 
-By using a tuple literal as type, `nargs` gets automatically set to the
-length of the tuple and the :class:`click.Tuple` type is automatically
-used.  The above example is thus equivalent to this:
+使用元组的选项，`nargs` 会根据元组的长度自动生成，同时自动使用 :class:`click.Tuple`。以下列子可等价表达上述例子：
 
 .. click:example::
 
@@ -91,16 +78,14 @@ used.  The above example is thus equivalent to this:
     def putitem(item):
         click.echo('name=%s id=%d' % item)
 
-Multiple Options
+多个选项
 ----------------
 
-Similarly to ``nargs``, there is also the case of wanting to support a
-parameter being provided multiple times to and have all values recorded --
-not just the last one.  For instance, ``git commit -m foo -m bar`` would
-record two lines for the commit message: ``foo`` and ``bar``. This can be
-accomplished with the ``multiple`` flag:
+和 ``nargs`` 类似，有时候可能会需要一个参数传递多次，同时记录每次的值而不是只记录最后一个值。
+比如，``git commit -m foo -m bar`` 会记录两行 commit 信息：``foo`` 和 ``bar``。这个功能
+可以通过 ``multiple`` 参数实现：
 
-Example:
+例如:
 
 .. click:example::
 
@@ -109,18 +94,16 @@ Example:
     def commit(message):
         click.echo('\n'.join(message))
 
-And on the command line:
+在命令行中运行:
 
 .. click:run::
 
     invoke(commit, args=['-m', 'foo', '-m', 'bar'])
 
-Counting
+计数
 --------
 
-In some very rare circumstances, it is interesting to use the repetition
-of options to count an integer up.  This can be used for verbosity flags,
-for instance:
+在一些非常罕见的情况下，使用重复的选项来计数是很有意思的。例如：
 
 .. click:example::
 
@@ -129,23 +112,18 @@ for instance:
     def log(verbose):
         click.echo('Verbosity: %s' % verbose)
 
-And on the command line:
+在命令行中运行:
 
 .. click:run::
 
     invoke(log, args=['-vvv'])
 
-Boolean Flags
+布尔值标记
 -------------
 
-Boolean flags are options that can be enabled or disabled.  This can be
-accomplished by defining two flags in one go separated by a slash (``/``)
-for enabling or disabling the option.  (If a slash is in an option string,
-Click automatically knows that it's a boolean flag and will pass
-``is_flag=True`` implicitly.)  Click always wants you to provide an enable
-and disable flag so that you can change the default later.
+布尔值标记用于开启或关闭选项。可以通过以 ``/`` 分割的两个标记来实现开启或关闭选项。（如果 ``/`` 在一个选项名中，Click 会自动识别其为布尔值标记，隐式默认 ``is_flag=True``）。Click 希望你能提供一个开启和关闭标记然后设置默认值。
 
-Example:
+例如:
 
 .. click:example::
 
@@ -159,15 +137,14 @@ Example:
             rv = rv.upper() + '!!!!111'
         click.echo(rv)
 
-And on the command line:
+在命令行中运行:
 
 .. click:run::
 
     invoke(info, args=['--shout'])
     invoke(info, args=['--no-shout'])
 
-If you really don't want an off-switch, you can just define one and
-manually inform Click that something is a flag:
+如果你实在不想要一个关闭标记，你只需要定义开启标记，然后手动设置它为标记。
 
 .. click:example::
 
@@ -181,15 +158,13 @@ manually inform Click that something is a flag:
             rv = rv.upper() + '!!!!111'
         click.echo(rv)
 
-And on the command line:
+在命令行中运行:
 
 .. click:run::
 
     invoke(info, args=['--shout'])
 
-Note that if a slash is contained in your option already (for instance, if
-you use Windows-style parameters where ``/`` is the prefix character), you
-can alternatively split the parameters through ``;`` instead:
+提示：如果 ``/`` 已经包含在你的选项名中（比如说如果你使用 Windows 风格的参数 ``/`` 是字符串的前缀），你可以使用 ``;`` 来代替 ``/``。
 
 .. click:example::
 
@@ -203,10 +178,9 @@ can alternatively split the parameters through ``;`` instead:
 
 .. versionchanged:: 6.0
 
-If you want to define an alias for the second option only, then you will
-need to use leading whitespace to disambiguate the format string:
+如果你想定义一个别名作为第二个选项名，你需要开头空格消除格式化字符串时的歧义：
 
-Example:
+例如:
 
 .. click:example::
 
@@ -224,16 +198,12 @@ Example:
 
     invoke(info, args=['--help'])
 
-Feature Switches
+功能开关
 ----------------
 
-In addition to boolean flags, there are also feature switches.  These are
-implemented by setting multiple options to the same parameter name and
-defining a flag value.  Note that by providing the ``flag_value`` parameter,
-Click will implicitly set ``is_flag=True``.
+另一种布尔值标记，同时也是功能开关。通过对多个选项设置同一个参数名，同时设置一个标记来实现。提示通过提供 ``flag_value`` 参数，Click 会自动隐式设置 ``is_flag=True``。
 
-To set a default flag, assign a value of `True` to the flag that should be
-the default.
+设置一个默认值为 `True` 的默认标记。
 
 .. click:example::
 
@@ -246,7 +216,7 @@ the default.
     def info(transformation):
         click.echo(getattr(sys.platform, transformation)())
 
-And on the command line:
+在命令行中运行:
 
 .. click:run::
 
@@ -256,14 +226,12 @@ And on the command line:
 
 .. _choice-opts:
 
-Choice Options
+选择选项
 --------------
 
-Sometimes, you want to have a parameter be a choice of a list of values.
-In that case you can use :class:`Choice` type.  It can be instantiated
-with a list of valid values.
+有时候你想要一个值为某个列表内的某一个的参数。这种情况下，你可以使用 :class:`Choice` 类型。它可以实例化一个包含有效值的列表。
 
-Example:
+例如:
 
 .. click:example::
 
@@ -272,7 +240,7 @@ Example:
     def digest(hash_type):
         click.echo(hash_type)
 
-What it looks like:
+运行如下:
 
 .. click:run::
 
@@ -284,14 +252,12 @@ What it looks like:
 
 .. _option-prompting:
 
-Prompting
+提示
 ---------
 
-In some cases, you want parameters that can be provided from the command line,
-but if not provided, ask for user input instead.  This can be implemented with
-Click by defining a prompt string.
+有时候，你想通过命令行输入没有提供的参数。通过定义一个 prompt 参数可以实现这个功能。
 
-Example:
+例如:
 
 .. click:example::
 
@@ -300,15 +266,14 @@ Example:
     def hello(name):
         click.echo('Hello %s!' % name)
 
-And what it looks like:
+运行如下:
 
 .. click:run::
 
     invoke(hello, args=['--name=John'])
     invoke(hello, input=['John'])
 
-If you are not happy with the default prompt string, you can ask for
-a different one:
+如果你不喜欢默认的提示信息，你可以自己定义：
 
 .. click:example::
 
@@ -317,17 +282,16 @@ a different one:
     def hello(name):
         click.echo('Hello %s!' % name)
 
-What it looks like:
+运行如下:
 
 .. click:run::
 
     invoke(hello, input=['John'])
 
-Password Prompts
+密码提示
 ----------------
 
-Click also supports hidden prompts and asking for confirmation.  This is
-useful for password input:
+Click 也支持隐藏输入信息和确认，这在输入密码时非常有用：
 
 .. click:example::
 
@@ -337,14 +301,13 @@ useful for password input:
     def encrypt(password):
         click.echo('Encrypting password to %s' % password.encode('rot13'))
 
-What it looks like:
+运行如下:
 
 .. click:run::
 
     invoke(encrypt, input=['secret', 'secret'])
 
-Because this combination of parameters is quite common, this can also be
-replaced with the :func:`password_option` decorator:
+因为这种情况非常普遍，因此你可以直接用 :func:`password_option` 装饰器取代：
 
 .. click:example::
 

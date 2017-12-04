@@ -1,6 +1,6 @@
 .. _setuptools-integration:
 
-Setuptools Integration
+Setuptools 集成
 ======================
 
 When writing command line utilities, it's recommended to write them as

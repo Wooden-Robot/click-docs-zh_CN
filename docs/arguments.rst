@@ -1,6 +1,6 @@
 .. _arguments:
 
-Arguments
+参数
 =========
 
 .. currentmodule:: click

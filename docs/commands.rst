@@ -1,4 +1,4 @@
-Commands and Groups
+命令和组
 ===================
 
 .. currentmodule:: click

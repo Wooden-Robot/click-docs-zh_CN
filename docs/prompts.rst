@@ -1,4 +1,4 @@
-User Input Prompts
+用户输入提示
 ==================
 
 .. currentmodule:: click

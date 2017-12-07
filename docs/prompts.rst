@@ -3,46 +3,36 @@
 
 .. currentmodule:: click
 
-Click supports prompts in two different places.  The first is automated
-prompts when the parameter handling happens, and the second is to ask for
-prompts at a later point independently.
+Click 支持两个不同地方的提示。第一种是参数处理发生时自动提示，第二种是后来单独要求提示。
 
-This can be accomplished with the :func:`prompt` function, which asks for
-valid input according to a type, or the :func:`confirm` function, which asks
-for confirmation (yes/no).
+这可以通过 :func:`prompt` 功能实现, 该功能要求根据类型进行有效输入，或者使用 :func:`confirm` 功能，并在使用时要求确认的功能（是/否）。
 
-Option Prompts
+选项提示
 --------------
 
-Option prompts are integrated into the option interface.  See
-:ref:`option-prompting` for more information.  Internally, it
-automatically calls either :func:`prompt` or :func:`confirm` as necessary.
+选项提示集成到选项界面中。有关更多信息，请参阅 :ref:`option-prompting` 。在内部，它会自动调用 :func:`prompt` 或 :func:`confirm` 根据需要。
 
-Input Prompts
+输入提示
 -------------
 
-To manually ask for user input, you can use the :func:`prompt` function.
-By default, it accepts any Unicode string, but you can ask for any other
-type.  For instance, you can ask for a valid integer::
+要手动要求用户输入，您可以使用该 :func:`prompt` 功能。
+默认情况下，它接受任何Unicode字符串，但您可以要求任何其他类型。例如，你可以要求一个有效的整数::
 
     value = click.prompt('Please enter a valid integer', type=int)
 
-Additionally, the type will be determined automatically if a default value is
-provided.  For instance, the following will only accept floats::
+此外，如果提供默认值，则会自动确定类型。例如，以下将只接受浮点数::
 
     value = click.prompt('Please enter a number', default=42.0)
 
-Confirmation Prompts
+确认提示
 --------------------
 
-To ask if a user wants to continue with an action, the :func:`confirm`
-function comes in handy.  By default, it returns the result of the prompt
-as a boolean value::
+要问一个用户是否想要继续一个动作，这个 :func:`confirm`
+函数就派上用场了。默认情况下，它以布尔值的形式返回提示的结果::
 
-    if click.confirm('Do you want to continue?'):
+    if click.confirm('Do you want to continue?'): 
         click.echo('Well done!')
 
-There is also the option to make the function automatically abort the
-execution of the program if it does not return ``True``::
+如果程序没有返回 ``True`` ，也可以自动中止程序的执行::
 
     click.confirm('Do you want to continue?', abort=True)

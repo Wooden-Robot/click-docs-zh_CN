@@ -1,4 +1,4 @@
-Documenting Scripts
+记录脚本
 ===================
 
 .. currentmodule:: click

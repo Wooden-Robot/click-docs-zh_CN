@@ -316,18 +316,13 @@ Click 也支持隐藏输入信息和确认，这在输入密码时非常有用�
     def encrypt(password):
         click.echo('Encrypting password to %s' % password.encode('rot13'))
 
-Dynamic Defaults for Prompts
+提示时获取动态的默认值
 ----------------------------
 
-The ``auto_envvar_prefix`` and ``default_map`` options for the context
-allow the program to read option values from the environment or a
-configuration file.  However, this overrides the prompting mechanism, so
-that the user does not get the option to change the value interactively.
+上下文中的 ``auto_envvar_prefix`` 和 ``default_map`` 选项允许程序从环境变量或者配置文件中读取选项的值。
+不过这会覆盖提示机制，你将不能够自主输入选项的值。
 
-If you want to let the user configure the default value, but still be
-prompted if the option isn't specified on the command line, you can do so
-by supplying a callable as the default value. For example, to get a default
-from the environment:
+如果你想要用户自己设置默认值，同时如果命令行没有获取该选项的值仍然使用提示进行输入，你可以提供一个可供调用的默认值。比如说从环境变量中获取一个默认值：
 
 .. click:example::
 
@@ -337,32 +332,19 @@ from the environment:
     def hello(username):
         print("Hello,", username)
 
-Callbacks and Eager Options
+回调选项和优先选项
 ---------------------------
 
-Sometimes, you want a parameter to completely change the execution flow.
-For instance, this is the case when you want to have a ``--version``
-parameter that prints out the version and then exits the application.
+有时候，你想要一个参数去完整地改变程序运行流程。比如，你想要一个 ``--version`` 参数去打印出程序的版本然后退出。
 
-Note: an actual implementation of a ``--version`` parameter that is
-reusable is available in Click as :func:`click.version_option`.  The code
-here is merely an example of how to implement such a flag.
+提示：``--version`` 参数功能真正地实现是依靠 Click 中的 :func:`click.version_option`。下面的代码只是做一个简单的展示。
 
-In such cases, you need two concepts: eager parameters and a callback.  An
-eager parameter is a parameter that is handled before others, and a
-callback is what executes after the parameter is handled.  The eagerness
-is necessary so that an earlier required parameter does not produce an
-error message.  For instance, if ``--version`` was not eager and a
-parameter ``--foo`` was required and defined before, you would need to
-specify it for ``--version`` to work.  For more information, see
-:ref:`callback-evaluation-order`.
+在下面你例子中，你需要明白两个概念：优先参数和回调。优先参数会比其他参数优先处理，回调是参数被处理后将调用回调函数。在优先需要一个参数时优先运行是很必须要的。
+比如，如果 ``--version`` 运行前需要 ``--foo`` 参数，你需要让它优于 ``--version`` 运行。详细信息请查看 :ref:`callback-evaluation-order`。
 
-A callback is a function that is invoked with two parameters: the current
-:class:`Context` and the value.  The context provides some useful features
-such as quitting the application and gives access to other already
-processed parameters.
+回调是有当前上下文 :class:`Context` 和值两个参数的函数。上下文提供退出程序和访问其他已经生成的参数的有用功能。
 
-Here an example for a ``--version`` flag:
+下面是一个 ``--version`` 的简单例子:
 
 .. click:example::
 
@@ -378,14 +360,10 @@ Here an example for a ``--version`` flag:
     def hello():
         click.echo('Hello World!')
 
-The `expose_value` parameter prevents the pretty pointless ``version``
-parameter from being passed to the callback.  If that was not specified, a
-boolean would be passed to the `hello` script.  The `resilient_parsing`
-flag is applied to the context if Click wants to parse the command line
-without any destructive behavior that would change the execution flow.  In
-this case, because we would exit the program, we instead do nothing.
+`expose_value` 参数可以避免没有用的 ``version`` 参数传入回调函数中。如果没有设置它，一个布尔值将传入 `hello` 脚本中。
+`resilient_parsing` 用于在 Click 想在不影响整个程序运行的前提下解析命令行。这个例子中我将退出程序，什么也不做。
 
-What it looks like:
+如下所示:
 
 .. click:run::
 
@@ -397,13 +375,11 @@ What it looks like:
     In Click 2.0 the signature for callbacks changed.  For more
     information about these changes see :ref:`upgrade-to-2.0`.
 
-Yes Parameters
+
+Yes 参数
 --------------
 
-For dangerous operations, it's very useful to be able to ask a user for
-confirmation.  This can be done by adding a boolean ``--yes`` flag and
-asking for confirmation if the user did not provide it and to fail in a
-callback:
+对于一些危险的操作，询问用户是否继续是一个明智的选择。通过添加一个布尔值 ``--yes`` 标记就可以实现，用户如果不提供它，就会得到提示。
 
 .. click:example::
 
@@ -418,15 +394,14 @@ callback:
     def dropdb():
         click.echo('Dropped all tables!')
 
-And what it looks like on the command line:
+在命令行中运行:
 
 .. click:run::
 
     invoke(dropdb, input=['n'])
     invoke(dropdb, args=['--yes'])
 
-Because this combination of parameters is quite common, this can also be
-replaced with the :func:`confirmation_option` decorator:
+因为这样的组合很常见，所以你可以用 :func:`confirmation_option` 装饰器来实现：
 
 .. click:example::
 
@@ -440,25 +415,16 @@ replaced with the :func:`confirmation_option` decorator:
     In Click 2.0 the signature for callbacks changed.  For more
     information about these changes see :ref:`upgrade-to-2.0`.
 
-Values from Environment Variables
+从环境变量中获取值
 ---------------------------------
 
-A very useful feature of Click is the ability to accept parameters from
-environment variables in addition to regular parameters.  This allows
-tools to be automated much easier.  For instance, you might want to pass
-a configuration file with a ``--config`` parameter but also support exporting
-a ``TOOL_CONFIG=hello.cfg`` key-value pair for a nicer development
-experience.
+Click 有一个非常有用的特性，除了接收常规的参数外它可以从环境变量中接收参数。这个功能可以让工具更容易自动化。比如，你可能想要通过 ``--config`` 参数获取配置文件
+，同时又想支持通过提供 ``TOOL_CONFIG=hello.cfg`` 键值对来获取配置文件。
 
-This is supported by Click in two ways.  One is to automatically build
-environment variables which is supported for options only.  To enable this
-feature, the ``auto_envvar_prefix`` parameter needs to be passed to the
-script that is invoked.  Each command and parameter is then added as an
-uppercase underscore-separated variable.  If you have a subcommand
-called ``foo`` taking an option called ``bar`` and the prefix is
-``MY_TOOL``, then the variable is ``MY_TOOL_FOO_BAR``.
+Click 通过两种方式实现这种需求。一种是去自动创建选项所需的环境变量。开启这个功能需要在脚本运行时使用 ``auto_envvar_prefix`` 参数。每个命令和参数将被添加为以
+下划线分割的大写变量。如果你有一个叫做 ``foo`` 的子命令，它有一个叫 ``bar`` 的选项，且有一个叫 ``MY_TOOL`` 的前缀，那么变量名就叫 ``MY_TOOL_FOO_BAR``。
 
-Example usage:
+用例:
 
 .. click:example::
 
@@ -470,17 +436,16 @@ Example usage:
     if __name__ == '__main__':
         greet(auto_envvar_prefix='GREETER')
 
-And from the command line:
+在命令行中运行:
 
 .. click:run::
 
     invoke(greet, env={'GREETER_USERNAME': 'john'},
            auto_envvar_prefix='GREETER')
 
-The second option is to manually pull values in from specific environment
-variables by defining the name of the environment variable on the option.
+另一种是通过在选项中定义环境变量的名字来手工从特定的环境变量中获取值。
 
-Example usage:
+用例:
 
 .. click:example::
 
@@ -492,32 +457,25 @@ Example usage:
     if __name__ == '__main__':
         greet()
 
-And from the command line:
+在命令行中运行:
 
 .. click:run::
 
     invoke(greet, env={'USERNAME': 'john'})
 
-In that case it can also be a list of different environment variables
-where the first one is picked.
+在这个例子中，也可以使用列表，列表中的第一个值将被选用。
 
-Multiple Values from Environment Values
+从环境变量中获取多个值
 ---------------------------------------
 
-As options can accept multiple values, pulling in such values from
-environment variables (which are strings) is a bit more complex.  The way
-Click solves this is by leaving it up to the type to customize this
-behavior.  For both ``multiple`` and ``nargs`` with values other than
-``1``, Click will invoke the :meth:`ParamType.split_envvar_value` method to
-perform the splitting.
+由于选项可以接收多个值，从环境变量中获取多个值（字符串）稍微复杂一些。Click 通过定义 type 
+同时 ``multiple`` 和 ``nargs`` 的值需要为 ``1`` 以外的值，Click 会运行 :meth:`ParamType.split_envvar_value` 
+方法来进行分隔。
 
-The default implementation for all types is to split on whitespace.  The
-exceptions to this rule are the :class:`File` and :class:`Path` types
-which both split according to the operating system's path splitting rules.
-On Unix systems like Linux and OS X, the splitting happens for those on
-every colon (``:``), and for Windows, on every semicolon (``;``).
+默认情况下所有的 type 都将使用空格来分割。但是 :class:`File` 和 :class:`Path` type 是例外，它们两个都遵守操作系统的路径分割规则。
+在 Linux 和 OS X 的 Unix系统上，通过 (``:``) 分割，在 Windows 系统上，通过 (``;``) 分割。
 
-Example usage:
+用例:
 
 .. click:example::
 
@@ -531,21 +489,18 @@ Example usage:
     if __name__ == '__main__':
         perform()
 
-And from the command line:
+在命令行中运行:
 
 .. click:run::
 
     import os
     invoke(perform, env={'PATHS': './foo/bar%s./test' % os.path.pathsep})
 
-Other Prefix Characters
+其他前缀参数
 -----------------------
 
-Click can deal with alternative prefix characters other than ``-`` for
-options.  This is for instance useful if you want to handle slashes as
-parameters ``/`` or something similar.  Note that this is strongly
-discouraged in general because Click wants developers to stay close to
-POSIX semantics.  However in certain situations this can be useful:
+Click 能够使用除了 ``-`` 以外进行分割的前缀参数。如果你想处理有斜杠 ``/`` 或其他类似的参数，这个特性将非常有用。
+注意一般情况下强烈不推荐使用，因为 Click 想要开发者尽可能地保持 POSIX 语法。但是在一些特定情况下，这个特性是很有用的：
 
 .. click:example::
 
@@ -557,15 +512,14 @@ POSIX semantics.  However in certain situations this can be useful:
     if __name__ == '__main__':
         chmod()
 
-And from the command line:
+在命令行中运行:
 
 .. click:run::
 
     invoke(chmod, args=['+w'])
     invoke(chmod, args=['-w'])
 
-Note that if you are using ``/`` as prefix character and you want to use a
-boolean flag you need to separate it with ``;`` instead of ``/``:
+注意如果你想使用 ``/`` 作为前缀字符，如果你想要使用布尔值标记，你需要使用 ``;`` 分隔符替换 ``/``:
 
 .. click:example::
 
@@ -579,21 +533,15 @@ boolean flag you need to separate it with ``;`` instead of ``/``:
 
 .. _ranges:
 
-Range Options
+范围选项
 -------------
 
-A special mention should go to the :class:`IntRange` type, which works very
-similarly to the :data:`INT` type, but restricts the value to fall into a
-specific range (inclusive on both edges).  It has two modes:
+使用 :class:`IntRange` type 可以获得一个特殊的方法，它和 :data:`INT` type 有点像，它的值被限定在一个特定的范围内（包含两端的值）。它有两种模式：
 
--   the default mode (non-clamping mode) where a value that falls outside
-    of the range will cause an error.
--   an optional clamping mode where a value that falls outside of the
-    range will be clamped.  This means that a range of ``0-5`` would
-    return ``5`` for the value ``10`` or ``0`` for the value ``-1`` (for
-    example).
+- 默认模式（非强制模式），如果值不在区间范围内将会引发一个错误。
+- 强制模式，如果值不在区间范围内，将会强制选取一个区间临近值。也就是说如果区间是 ``0-5``，值为 ``10`` 则选取 ``5``，值为 ``-1`` 则选取 ``0``。
 
-Example:
+例如:
 
 .. click:example::
 
@@ -606,31 +554,26 @@ Example:
     if __name__ == '__main__':
         repeat()
 
-And from the command line:
+在命令行中运行:
 
 .. click:run::
 
     invoke(repeat, args=['--count=1000', '--digit=5'])
     invoke(repeat, args=['--count=1000', '--digit=12'])
 
-If you pass ``None`` for any of the edges, it means that the range is open
-at that side.
+如果区间的一端为 ``None``，这意味着这一端将不限制。
 
-Callbacks for Validation
+使用回调函数进行验证
 ------------------------
 
 .. versionchanged:: 2.0
 
-If you want to apply custom validation logic, you can do this in the
-parameter callbacks.  These callbacks can both modify values as well as
-raise errors if the validation does not work.
+如果你想自定义验证逻辑，你可以在回调参数中做这些事。回调方法中既可以改变值又可以在验证失败时抛出错误。
 
-In Click 1.0, you can only raise the :exc:`UsageError` but starting with
-Click 2.0, you can also raise the :exc:`BadParameter` error, which has the
-added advantage that it will automatically format the error message to
-also contain the parameter name.
+在 Click 1.0 中，你需要抛出 :exc:`UsageError` 错误，但是从 Click 2.0 开始，你也可以抛出 :exc:`BadParameter` 错误，这个错误增加了一些优点，它会自动
+格式化包含参数名的错误信息。
 
-Example:
+例如:
 
 .. click:example::
 
@@ -649,7 +592,7 @@ Example:
     if __name__ == '__main__':
         roll()
 
-And what it looks like:
+在命令行中运行:
 
 .. click:run::
 

@@ -1,34 +1,24 @@
-Advanced Patterns
+高级模式
 =================
 
 .. currentmodule:: click
 
-In addition to common functionality that is implemented in the library
-itself, there are countless patterns that can be implemented by extending
-Click.  This page should give some insight into what can be accomplished.
+除了库本身实现的通用功能之外，还有无数的模式可以通过扩展Click来实现。这节内容可以帮你更好完成信息。
 
 .. _aliases:
 
-Command Aliases
+命令别名
 ---------------
 
-Many tools support aliases for commands.  For instance, you can configure
-``git`` to accept ``git ci`` as alias for ``git commit``.  Other tools
-also support auto-discovery for aliases by automatically shortening them.
+许多工具支持命令的别名。例如，你可以配置``git`` 来接受 ``git ci`` 取别名为 ``git commit``.  其他工具还支持通过自动缩短别名来自动发现别名。
 
-Click does not support this out of the box, but it's very easy to customize
-the :class:`Group` or any other :class:`MultiCommand` to provide this
-functionality.
+Click 不支持开箱即用, 但是定制 :class:`Group` 或任何其他 :class:`MultiCommand` 来提供这个功能是非常容易的。
 
-As explained in :ref:`custom-multi-commands`, a multi command can provide
-two methods: :meth:`~MultiCommand.list_commands` and
-:meth:`~MultiCommand.get_command`.  In this particular case, you only need
-to override the latter as you generally don't want to enumerate the
-aliases on the help page in order to avoid confusion.
+正如 :ref:`custom-multi-commands`解释中那样, 一个multi命令可以提供两种方法: :meth:`~MultiCommand.list_commands` 和:meth:`~MultiCommand.get_command`. 
+ 在这种特殊情况下，您只需要覆盖后者，因为你通常不希望枚举帮助页面上的别名，以避免混淆。
 
-This following example implements a subclass of :class:`Group` that
-accepts a prefix for a command.  If there were a command called ``push``,
-it would accept ``pus`` as an alias (so long as it was unique):
+下面的例子实现了一个接受命令前缀的子类 :class:`Group`。  如果有一个命令被调用 ``push``,
+它会接受 ``pus`` 这个别名（只要它是唯一的）:
 
 .. click:example::
 
@@ -46,7 +36,7 @@ it would accept ``pus`` as an alias (so long as it was unique):
                 return click.Group.get_command(self, ctx, matches[0])
             ctx.fail('Too many matches: %s' % ', '.join(sorted(matches)))
 
-And it can then be used like this:
+然后可以像这样使用它:
 
 .. click:example::
 
@@ -62,20 +52,15 @@ And it can then be used like this:
     def pop():
         pass
 
-Parameter Modifications
+参数修改
 -----------------------
 
-Parameters (options and arguments) are forwarded to the command callbacks
-as you have seen.  One common way to prevent a parameter from being passed
-to the callback is the `expose_value` argument to a parameter which hides
-the parameter entirely.  The way this works is that the :class:`Context`
-object has a :attr:`~Context.params` attribute which is a dictionary of
-all parameters.  Whatever is in that dictionary is being passed to the
-callbacks.
+参数（选项和参数）被转发到命令回调，正如你所看到的。防止参数传递给回调的一个常见方法是参数的expose_value参数，该参数完全隐藏参数。这样做的方式是 :class:`Context`
+对象具有 :attr:`~Context.params` 属性，它是所有参数的字典。
+表示字典中的任何东西正在传递给回调。
 
-This can be used to make up addition parameters.  Generally this pattern
-is not recommended but in some cases it can be useful.  At the very least
-it's good to know that the system works this way.
+
+这可以用来补充附加参数。通常这种模式是不推荐的，但在某些情况下，它可能是有用的。至少可以知道这个系统是这样工作的。
 
 .. click:example::
 
@@ -92,9 +77,8 @@ it's good to know that the system works this way.
         if fp is not None:
             click.echo('%s: %s' % (url, fp.code))
 
-In this case the callback returns the URL unchanged but also passes a
-second ``fp`` value to the callback.  What's more recommended is to pass
-the information in a wrapper however:
+在这种情况下，回调 ``fp`` 函数会返回不变的URL，但也会传递第二个值给回调函数。
+更值得推荐的是将信息传递给包装器:
 
 .. click:example::
 
@@ -117,19 +101,14 @@ the information in a wrapper however:
             click.echo('%s: %s' % (url.url, url.fp.code))
 
 
-Token Normalization
+令牌标准化
 -------------------
 
 .. versionadded:: 2.0
 
-Starting with Click 2.0, it's possible to provide a function that is used
-for normalizing tokens.  Tokens are option names, choice values, or command
-values.  This can be used to implement case insensitive options, for
-instance.
+从Click 2.0开始，可以提供用于标准化令牌的函数。令牌是选项名称，选项值或命令值。例如，这可以用来实现不区分大小写的选项。
 
-In order to use this feature, the context needs to be passed a function that
-performs the normalization of the token.  For instance, you could have a
-function that converts the token to lowercase:
+为了使用这个特性，上下文需要传递一个执行标记规范化的函数。例如，你可以有一个将标记转换为小写的函数：
 
 .. click:example::
 
@@ -140,27 +119,21 @@ function that converts the token to lowercase:
     def cli(name):
         click.echo('Name: %s' % name)
 
-And how it works on the command line:
+它如何在命令行上工作:
 
 .. click:run::
 
     invoke(cli, prog_name='cli', args=['--NAME=Pete'])
 
-Invoking Other Commands
+调用其他命令
 -----------------------
 
-Sometimes, it might be interesting to invoke one command from another
-command.  This is a pattern that is generally discouraged with Click, but
-possible nonetheless.  For this, you can use the :func:`Context.invoke`
-or :func:`Context.forward` methods.
+有时，从另一个命令调用一个命令可能会很有趣。但我们不鼓励用这样的click模式，不过你可以自行尝试下 :func:`Context.invoke`和 :func:`Context.forward` 方法.
 
-They work similarly, but the difference is that :func:`Context.invoke` merely
-invokes another command with the arguments you provide as a caller,
-whereas :func:`Context.forward` fills in the arguments from the current
-command.  Both accept the command as the first argument and everything else
-is passed onwards as you would expect.
+它们的工作方式类似，但区别在于 :func:`Context.invoke` 只是用你提供的参数作为调用者调用另一个命令，而 :func:`Context.forward` 填充当前命令的参数。
+两者都接受命令作为第一个参数，其他的一切都按照你所期望的那样向前传递。
 
-Example:
+例如:
 
 .. click:example::
 
@@ -178,7 +151,7 @@ Example:
         ctx.forward(test)
         ctx.invoke(test, count=42)
 
-And what it looks like:
+呈现的效果:
 
 .. click:run::
 
@@ -187,102 +160,63 @@ And what it looks like:
 
 .. _callback-evaluation-order:
 
-Callback Evaluation Order
+回调评估顺序
 -------------------------
 
-Click works a bit differently than some other command line parsers in that
-it attempts to reconcile the order of arguments as defined by the
-programmer with the order of arguments as defined by the user before
-invoking any callbacks.
+Click的作用与其他一些命令行解析器有所不同，它试图在调用任何回调函数之前，将程序员定义的参数顺序与用户定义的参数顺序进行协调。
 
-This is an important concept to understand when porting complex
-patterns to Click from optparse or other systems.  A parameter
-callback invocation in optparse happens as part of the parsing step,
-whereas a callback invocation in Click happens after the parsing.
+在将复杂模式移植到optparse或其他系统进行点击时，这是一个重要的概念。optparse中的参数回调调用是解析步骤的一部分，而Click中的回调调用是在解析之后发生的。
 
-The main difference is that in optparse, callbacks are invoked with the raw
-value as it happens, whereas a callback in Click is invoked after the
-value has been fully converted.
+主要区别在于，在optparse中，回调函数会在原始值被调用的情况下调用，而在Click完成转换后调用Click中的回调函数。
 
-Generally, the order of invocation is driven by the order in which the user
-provides the arguments to the script; if there is an option called ``--foo``
-and an option called ``--bar`` and the user calls it as ``--bar
---foo``, then the callback for ``bar`` will fire before the one for ``foo``.
+通常，调用的顺序是由用户向脚本提供参数的顺序驱动的; 如果有一个选项被调用，``--foo``
+并且一个选项被调用 ``--bar`` 用户调用它 ``--bar--foo``,那么这个回调 ``bar`` 将会在这个选项之前
+触发 ``foo``.
 
-There are three exceptions to this rule which are important to know:
+这里有三个特例不遵守这个规则:
 
-Eagerness:
-    An option can be set to be "eager".  All eager parameters are
-    evaluated before all non-eager parameters, but again in the order as
-    they were provided on the command line by the user.
+渴望：
+    一个选项可以设置为“渴望”。在所有非渴望参数之前评估所有渴望的参数，但是又按用户在命令行上提供的顺序来评估。
 
-    This is important for parameters that execute and exit like ``--help``
-    and ``--version``.  Both are eager parameters, but whatever parameter
-    comes first on the command line will win and exit the program.
+    这对于执行参数输出比如 ``--help``和 ``--version``一样重要
+    两者都是渴望的参数，但是无论命令行上的第一个参数是什么，都将赢得并退出程序。
 
-Repeated parameters:
-    If an option or argument is split up on the command line into multiple
-    places because it is repeated -- for instance, ``--exclude foo --include
-    baz --exclude bar`` -- the callback will fire based on the position of
-    the first option.  In this case, the callback will fire for
-    ``exclude`` and it will be passed both options (``foo`` and
-    ``bar``), then the callback for ``include`` will fire with ``baz``
-    only.
+重复参数：
+    如果一个选项或者参数在命令行中被分割成多个地方，比如重复 ``--exclude foo --include
+    baz --exclude bar`` -- 回调会根据第一个选项的位置触发。在这种情况下，回调将触发
+    ``exclude`` ，它将通过这两个选项（``foo`` 和``bar``）,然后回调 ``include`` 只会触发 ``baz``。
+   
+    请注意，即使一个参数不允许多个版本，Click仍然会接受第一个的位置，但是会忽略除最后一个之外的每个值。其原因是通过设置默认值的shell别名来允许可组合性。
 
-    Note that even if a parameter does not allow multiple versions, Click
-    will still accept the position of the first, but it will ignore every
-    value except the last.  The reason for this is to allow composability
-    through shell aliases that set defaults.
+缺少参数：
+    如果在命令行中没有定义参数，回调仍然会触发。这与它在optparse中的工作方式不同，未定义的值不会触发回调。缺少参数在最后触发它们的回调，这使得它们可以默认来自之前参数的值。
 
-Missing parameters:
-    If a parameter is not defined on the command line, the callback will
-    still fire.  This is different from how it works in optparse where
-    undefined values do not fire the callback.  Missing parameters fire
-    their callbacks at the very end which makes it possible for them to
-    default to values from a parameter that came before.
-
-Most of the time you do not need to be concerned about any of this,
-but it is important to know how it works for some advanced cases.
+大多数情况下，你不必关心这些情况，但了解某些高级案例的工作原理非常重要。
 
 .. _forwarding-unknown-options:
 
-Forwarding Unknown Options
+转发未知的选项
 --------------------------
 
-In some situations it is interesting to be able to accept all unknown
-options for further manual processing.  Click can generally do that as of
-Click 4.0, but it has some limitations that lie in the nature of the
-problem.  The support for this is provided through a parser flag called
-``ignore_unknown_options`` which will instruct the parser to collect all
-unknown options and to put them to the leftover argument instead of
-triggering a parsing error.
+在某些情况下，能够接受所有未知选项以进一步手动处理是有趣的。点击一般可以做到的点击4.0，但是它仍有一些局限性。对此的支持是通过一个解析器标志调用的In some situations it is interesting to be able 
+``ignore_unknown_options`` ，它将指示解析器收集所有未知的选项，并将它们放到剩余参数中，
+而不是触发解析错误。
 
-This can generally be activated in two different ways:
 
-1.  It can be enabled on custom :class:`Command` subclasses by changing
-    the :attr:`~BaseCommand.ignore_unknown_options` attribute.
-2.  It can be enabled by changing the attribute of the same name on the
-    context class (:attr:`Context.ignore_unknown_options`).  This is best
-    changed through the ``context_settings`` dictionary on the command.
+可以通过下面两种方式激活:
 
-For most situations the easiest solution is the second.  Once the behavior
-is changed something needs to pick up those leftover options (which at
-this point are considered arguments).  For this again you have two
-options:
+1.  更改 :class:`Command` 属性在custom :attr:`~BaseCommand.ignore_unknown_options` 子类上启用它。
+2.  更改上下文类I (:attr:`Context.ignore_unknown_options`)上相同名称的属性来启用它。这是通过 ``context_settings`` 命令字典改变。
 
-1.  You can use :func:`pass_context` to get the context passed.  This will
-    only work if in addition to :attr:`~Context.ignore_unknown_options`
-    you also set :attr:`~Context.allow_extra_args` as otherwise the
-    command will abort with an error that there are leftover arguments.
-    If you go with this solution, the extra arguments will be collected in
-    :attr:`Context.args`.
-2.  You can attach a :func:`argument` with ``nargs`` set to `-1` which
-    will eat up all leftover arguments.  In this case it's recommeded to
-    set the `type` to :data:`UNPROCESSED` to avoid any string processing
-    on those arguments as otherwise they are forced into unicode strings
-    automatically which is often not what you want.
+对于大多数情况下，最简单的解决方案是第二个。一旦行为被改变，需要拿起那些剩余的选项（在这点上被认为是参数）。为此，你有两个选择：
 
-In the end you end up with something like this:
+1.  你可以使用 :func:`pass_context` 来获取传递的上下文。这只有在除了 :attr:`~Context.ignore_unknown_options`之外，你也可以设置 :attr:`~Context.allow_extra_args` ，否则命令将会中止，并有一个错误，存在剩余的参数。如果使用这个解决方案，额外的参数将被收集在
+    :attr:`Context.args`中。
+2.  你可以附上 :func:`argument` 将 ``nargs`` 设置为 `-1` ，这将吃掉所有剩余参数。
+在这种情况下，建议将类型设置为 :data:`UNPROCESSED` 以避免对这些参数进行任何字符串处理，
+否则它们会被自动强制为unicode字符串，这通常不是您想要的。
+
+最后你会得到这样的结果：
 
 .. click:example::
 
@@ -301,7 +235,7 @@ In the end you end up with something like this:
             click.echo('Invoking: %s' % ' '.join(cmdline))
         call(cmdline)
 
-And what it looks like:
+它看起来像：
 
 .. click:run::
 
@@ -311,58 +245,33 @@ And what it looks like:
     println()
     invoke(cli, prog_name='cli', args=['-v', 'a = 1; b = 2; a * b'])
 
-As you can see the verbosity flag is handled by Click, everything else
-ends up in the `timeit_args` variable for further processing which then
-for instance, allows invoking a subprocess.  There are a few things that
-are important to know about how this ignoring of unhandled flag happens:
+正如你所看到的，通过Click来处理详细性标志，其他的一切都会在timeit_args变量中进行进一步处理，然后调用一个子进程。关于如何忽略未处理的标志，有几件重要的事情要知道：
 
-*   Unknown long options are generally ignored and not processed at all.
-    So for instance if ``--foo=bar`` or ``--foo bar`` are passed they
-    generally end up like that.  Note that because the parser cannot know
-    if an option will accept an argument or not, the ``bar`` part might be
-    handled as an argument.
-*   Unknown short options might be partially handled and reassmebled if
-    necessary.  For instance in the above example there is an option
-    called ``-v`` which enables verbose mode.  If the command would be
-    ignored with ``-va`` then the ``-v`` part would be handled by Click
-    (as it is known) and ``-a`` would end up in the leftover parameters
-    for further processing.
-*   Depending on what you plan on doing you might have some success by
-    disabling interspersed arguments
-    (:attr:`~Context.allow_interspersed_args`) which instructs the parser
-    to not allow arguments and options to be mixed.  Depending on your
-    situation this might improve your results.
+*   未知的长选项通常被忽略，根本不处理。因此，举例来说，无论 ``--foo=bar``还是 ``--foo bar``  传递
+他们通常最终会这样。请注意，因为解析器无法知道某个选项是否会接受参数，所以 ``bar`` 部分可能会作为
+参数进行处理。
+*   未知的短期选项可能会被部分处理，如有必要可重新调整。例如在上面的例子中，有一个选项 ``-v`` 可以启用详细模式。如果该命令将被忽略， ``-va`` 那么 ``-v`` 部分将由Click处理（因为它是已知的）
+并且 ``-a`` 将在剩余参数中结束以用于进一步处理。
+*   根据你的计划，你可能会通过禁用散布的参数(:attr:`~Context.allow_interspersed_args`) 来取得一些成功，它指示解析器不允许混合参数和选项。根据你的情况，这可能会改善你的结果。
 
-Generally though the combinated handling of options and arguments from
-your own commands and commands from another application are discouraged
-and if you can avoid it, you should.  It's a much better idea to have
-everything below a subcommand be forwarded to another application than to
-handle some arguments yourself.
+一般来说，虽然从你自己的命令和来自另一个应用程序的命令的选项和参数的组合处理是不鼓励的，请尽可能避免这种情况。将子命令下的所有内容都转发给另一个应用程序比自己处理一些参数更好。
 
 
-Global Context Access
+全局上下文访问
 ---------------------
 
 .. versionadded:: 5.0
 
-Starting with Click 5.0 it is possible to access the current context from
-anywhere within the same through through the use of the
-:func:`get_current_context` function which returns it.  This is primarily
-useful for accessing the context bound object as well as some flags that
-are stored on it to customize the runtime behavior.  For instance the
-:func:`echo` function does this to infer the default value of the `color`
-flag.
+从Click 5.0开始，可以通过使用:func:`get_current_context` 函数从同一个线程中的任何地方访问当前上下
+文，这主要用于访问上下文绑定对象以及存储在其上的一些标志，以定制运行时行为。例如
+:func:`echo` 函数可以用来推断颜色标志的默认值。
 
-Example usage::
+用法示例::
 
     def get_current_command_name():
         return click.get_current_context().info_name
 
-It should be noted that this only works within the current thread.  If you
-spawn additional threads then those threads will not have the ability to
-refer to the current context.  If you want to give another thread the
-ability to refer to this context you need to use the context within the
-thread as a context manager::
+应该指出的是，这只适用于当前线程。如果你产生了额外的线程，那么这些线程将无法引用当前上下文。如果你想给另一个线程引用这个上下文的能力，你需要使用线程内的上下文作为上下文管理器::
 
     def spawn_thread(ctx, func):
         def wrapper():
@@ -372,8 +281,4 @@ thread as a context manager::
         t.start()
         return t
 
-Now the thread function can access the context like the main thread would
-do.  However if you do use this for threading you need to be very careful
-as the vast majority of the context is not thread safe!  You are only
-allowed to read from the context, but not to perform any modifications on
-it.
+现在线程函数可以像主线程那样访问上下文。但是，如果你使用线程的话，你需要非常小心，因为绝大多数的上下文不是线程安全的！你只能从上下文中读取，而不能对其进行任何修改。

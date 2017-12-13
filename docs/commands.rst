@@ -131,7 +131,7 @@ Click 点击严格分隔命令和子命令之间的参数。这意味着该选�
 
 .. click:run::
 
-     invoke(cli, prog_name='tool', args=[])
+    invoke(cli, prog_name='tool', args=[])
     invoke(cli, prog_name='tool', args=['sync'])
 
 .. _custom-multi-commands:
@@ -144,7 +144,7 @@ Click 点击严格分隔命令和子命令之间的参数。这意味着该选�
 
 .. click:example::
 
-     import click
+    import click
     import os
 
     plugin_folder = os.path.join(os.path.dirname(__file__), 'commands')
@@ -165,7 +165,7 @@ Click 点击严格分隔命令和子命令之间的参数。这意味着该选�
             with open(fn) as f:
                 code = compile(f.read(), fn, 'exec')
                 eval(code, ns, ns)
-             return ns['cli']
+            return ns['cli']
 
     cli = MyCLI(help='This tool\'s subcommands are loaded from a '
                 'plugin folder dynamically.')

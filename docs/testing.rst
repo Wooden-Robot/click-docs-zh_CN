@@ -1,28 +1,21 @@
-Testing Click Applications
+测试 Click 程序
 ==========================
 
 .. currentmodule:: click.testing
 
-For basic testing, Click provides the :mod:`click.testing` module which
-provides test functionality that helps you invoke command line
-applications and check their behavior.
+对于基础的测试，Click 提供了 :mod:`click.testing` 模块，它可以调用命令行程序然后检测它的功能。
 
-These tools should really only be used for testing as they change
-the entire interpreter state for simplicity and are not in any way
-thread-safe!
+这类工具真的只能用于测试，因为为了实现简单它们会更改整个解释器的状态，而且不是线程安全的。
 
-Basic Testing
+基础测试
 -------------
 
-The basic functionality for testing Click applications is the
-:class:`CliRunner` which can invoke commands as command line scripts.  The
-:meth:`CliRunner.invoke` method runs the command line script in isolation
-and captures the output as both bytes and binary data.
+:class:`CliRunner` 是测试 Click 程序最基础的功能，它能够调用命令作为命令行脚本。
+:meth:`CliRunner.invoke` 方法可以隔离环境中运行命令行脚本并以字节和二进制格式捕获输出数据。
 
-The return value is a :class:`Result` object, which has the captured output
-data, exit code, and optional exception attached.
+返回结果是一个 :class:`Result` 对象，它可以捕获输出数据，退出代码，附加可选异常。
 
-Example::
+例如::
 
     import click
     from click.testing import CliRunner
@@ -38,9 +31,9 @@ Example::
         assert result.exit_code == 0
         assert result.output == 'Hello Peter!\n'
 
-For subcommand testing, a subcommand name must be specified in the `args` parameter of :meth:`CliRunner.invoke` method.
+对于子命令测试，子命令的名称必须在 :meth:`CliRunner.invoke` 方法 `args` 中的指定。
 
-Example::
+例如::
 
     import click
     from click.testing import CliRunner
@@ -61,14 +54,12 @@ Example::
         assert 'Debug mode is on' in result.output
         assert 'Syncing' in result.output
 
-File System Isolation
+文件系统隔离
 ---------------------
 
-For basic command line tools that want to operate with the file system, the
-:meth:`CliRunner.isolated_filesystem` method comes in useful which sets up
-an empty folder and changes the current working directory to.
+对于基础的想要使用文件系统的命令行工具。:meth:`CliRunner.isolated_filesystem` 方法将非常有用，它会创建一个空的文件夹，并将当前路径设置为空文件夹的路径。
 
-Example::
+例如::
 
     import click
     from click.testing import CliRunner
@@ -88,11 +79,10 @@ Example::
             assert result.exit_code == 0
             assert result.output == 'Hello World!\n'
 
-Input Streams
+输入流
 -------------
 
-The test wrapper can also be used to provide input data for the input
-stream (stdin).  This is very useful for testing prompts, for instance::
+测试装饰器也可以用来为输入流（stdin）提供输入数据。这在测试提示时会非常有用，比如::
 
     import click
     from click.testing import CliRunner
@@ -108,6 +98,4 @@ stream (stdin).  This is very useful for testing prompts, for instance::
         assert not result.exception
         assert result.output == 'Foo: wau wau\nfoo=wau wau\n'
 
-Note that prompts will be emulated so that they write the input data to
-the output stream as well.  If hidden input is expected then this
-obviously does not happen.
+注意：因为提示是模拟的，所以写入输入数据和输出数据也是模拟的。如果预计会被隐藏的输入那么显然结果不会发生。

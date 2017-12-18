@@ -3,18 +3,14 @@
 
 .. currentmodule:: click
 
-Click makes it very easy to document your command line tools.  First of
-all, it automatically generates help pages for you.  While these are
-currently not customizable in terms of their layout, all of the text
-can be changed.
+Click 可以很容易地记录你的命令行工具。首先，它会自动为您生成帮助页面。虽然这些目前还不能根据其布局进行自定义，但所有文本都可以更改。
 
-Help Texts
+帮助文本
 ----------
 
-Commands and options accept help arguments.  In the case of commands, the
-docstring of the function is automatically used if provided.
+命令和选项接受帮助参数。在命令的情况下，功能的文档字符串是自动使用
 
-Simple example:
+简单举例：
 
 .. click:example::
 
@@ -26,29 +22,22 @@ Simple example:
         for x in range(count):
             click.echo('Hello %s!' % name)
 
-And what it looks like:
+它看起来像：
 
 .. click:run::
 
     invoke(hello, args=['--help'])
 
-Arguments cannot be documented this way.  This is to follow the general
-convention of Unix tools of using arguments for only the most necessary
-things and to document them in the introduction text by referring to them
-by name.
+参数不能用这种方式记录。这是遵循Unix工具的一般惯例，只使用最必要的参数来使用参数，并通过名称来引用它们。
 
-Preventing Rewrapping
+防止重新装包
 ---------------------
 
-The default behavior of Click is to rewrap text based on the width of the
-terminal.  In some circumstances, this can become a problem. The main issue
-is when showing code examples, where newlines are significant.
+Click 的默认行为是根据终端的宽度重新包装文本。在某些情况下，这可能会成为一个问题。主要的问题是在显示代码示例时，换行符很重要。
 
-Rewrapping can be disabled on a per-paragraph basis by adding a line with
-solely the ``\b`` escape marker in it.  This line will be removed from the
-help text and rewrapping will be disabled.
+重新包装可以通过添加一个只有 ``\b`` 转义标记的行来禁用。此行将从帮助文本中删除，重新包装将被禁用。
 
-Example:
+例：
 
 .. click:example::
 
@@ -70,20 +59,16 @@ Example:
         that will be rewrapped again.
         """
 
-And what it looks like:
+它看起来像：
 
 .. click:run::
 
     invoke(cli, args=['--help'])
 
-
-Meta Variables
+元变量
 --------------
 
-Options and parameters accept a ``metavar`` argument that can change the
-meta variable in the help page.  The default version is the parameter name
-in uppercase with underscores, but can be annotated differently if
-desired.  This can be customized at all levels:
+选项和参数接受 ``metavar`` 参数，可以更改在帮助页面中的元变量。默认版本是带有下划线的大写参数名称，但如果需要，可以按不同的方式进行注释。这可以在各个层面进行定制：
 
 .. click:example::
 
@@ -96,19 +81,17 @@ desired.  This can be customized at all levels:
         for x in range(count):
             click.echo('Hello %s!' % name)
 
-Example:
+举例：
 
 .. click:run::
 
     invoke(hello, args=['--help'])
 
 
-Command Short Help
+命令的短帮助
 ------------------
 
-For commands, a short help snippet is generated.  By default, it's the first
-sentence of the help message of the command, unless it's too long.  This can
-also be overridden:
+对于命令，会生成一个简短的帮助代码片断。默认情况下，它是该命令的帮助消息的第一个句子，除非它太长。这也可以被覆盖：
 
 .. click:example::
 
@@ -124,28 +107,20 @@ also be overridden:
     def delete():
         """Deletes the repository."""
 
-And what it looks like:
+它看起来像：
 
 .. click:run::
 
     invoke(cli, prog_name='repo.py')
 
-
-Help Parameter Customization
+帮助参数订制
 ----------------------------
 
-.. versionadded:: 2.0
+2.0版本新功能
 
-The help parameter is implemented in Click in a very special manner.
-Unlike regular parameters it's automatically added by Click for any
-command and it performs automatic conflict resolution.  By default it's
-called ``--help``, but this can be changed.  If a command itself implements
-a parameter with the same name, the default help parameter stops accepting
-it.  There is a context setting that can be used to override the names of
-the help parameters called :attr:`~Context.help_option_names`.
+帮助参数在 Click 中以一种非常特殊的方式实现。与常规参数不同的是，它自动通过点击添加任何命令，并执行自动冲突解决。默认情况下它被调用 ``--help`` ，但是这个可以改变。如果一个命令本身实现了一个名字相同的参数，那么默认的帮助参数将停止接受它。有一个上下文设置可以用来覆盖所调用的帮助参数的名称 `help_option_names` 。
 
-This example changes the default parameters to ``-h`` and ``--help``
-instead of just ``--help``:
+这个例子改变了默认的参数，用 ``-h--`` 和 ``--help`` 代替 ``--help`` ：
 
 .. click:example::
 
@@ -155,7 +130,7 @@ instead of just ``--help``:
     def cli():
         pass
 
-And what it looks like:
+它看起来像：
 
 .. click:run::
 

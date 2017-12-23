@@ -1,73 +1,55 @@
-Exception Handling
+异常处理
 ==================
 
 .. currentmodule:: click
 
-Click internally uses exceptions to signal various error conditions that
-the user of the application might have caused.  Primarily this is things
-like incorrect usage.
+Click内部使用异常提示来表示应用程序的用户设置的各种错误条件。这是使用不当所造成的。
 
-Where are Errors Handled?
+错误在哪里处理？
 -------------------------
 
-Click's main error handling is happening in :meth:`BaseCommand.main`.  In
-there it handles all subclasses of :exc:`ClickException` as well as the
-standard :exc:`EOFError` and :exc:`KeyboardInterrupt` exceptions.  The
-latter are internally translated into a :exc:`Abort`.
+Click的主要错误处理发生在 :meth:`BaseCommand.main`.  在那里它处理所有的子类
+:exc:`ClickException` 以及
+:exc:`EOFError` 和 :exc:`KeyboardInterrupt` 标准。后者在内部翻译成一个 :exc:`Abort`.
 
-The logic applied is the following:
+应用的逻辑如下：
 
-1.  If an :exc:`EOFError` or :exc:`KeyboardInterrupt` happens, reraise it
-    as :exc:`Abort`.
-2.  If an :exc:`ClickException` is raised, invoke the
-    :meth:`ClickException.show` method on it to display it and then exit
-    the program with :attr:`ClickException.exit_code`.
-3.  If an :exc:`Abort` exception is raised print the string ``Aborted!``
-    to standard error and exit the program with exit code ``1``.
-4.  if it goes through well, exit the program with exit code ``0``.
+1.  如果 :exc:`EOFError` 或者 :exc:`KeyboardInterrupt` 发生,，将其重新评估为 :exc:`Abort`.
+2.  如果出现一个 :exc:`ClickException` , 调用
+    :meth:`ClickException.show` 方法来显示它，然后退出程序 :attr:`ClickException.exit_code`.
+3.  如果发生 :exc:`Abort` 异常，则将字符串打印Aborted! 到标准错误，并使用退出代码退出程序1。
+4.  如果顺利通过，退出程序退出代码0。
 
-What if I don't want that?
+如果我不想要呢？
 --------------------------
 
-Generally you always have the option to invoke the :meth:`invoke` method
-yourself.  For instance if you have a :class:`Command` you can invoke it
-manually like this::
+一般来说，你总是可以选择自己调用 :meth:`invoke` 方法。例如，如果你有一个
+ :class:`Command` 你可以像这样手动调用它::
 
     ctx = command.make_context('command-name', ['args', 'go', 'here'])
     with ctx:
         result = command.invoke(ctx)
 
-In this case exceptions will not be handled at all and bubbled up as you
-would expect.
+在这种情况下，异常将不会被完全处理，并且会像你期望的那样冒出来。
 
-Starting with Click 3.0 you can also use the :meth:`Command.main` method
-but disable the standalone mode which will do two things: disable
-exception handling and disable the implicit :meth:`sys.exit` at the end.
+从Click 3.0开始，你也可以使用该 :meth:`Command.main` 方法，但禁用独立模式将执行两项操作：禁用异常处理并在最后通过 :meth:`sys.exit` 禁用隐式模式。
 
-So you can do something like this::
+所以你可以这样做：::
 
     command.main(['command-name', 'args', 'go', 'here'],
                  standalone_mode=False)
 
-Which Exceptions Exist?
+存在哪些例外？
 -----------------------
 
-Click has two exception bases: :exc:`ClickException` which is raised for
-all exceptions that Click wants to signal to the user and :exc:`Abort`
-which is used to instruct Click to abort the execution.
+Click 具有两个异常基础: :exc:`ClickException` 针对所有例外情况引发的Click，这些异常是要向用户发出信号，而 :exc:`Abort`
+用于指示Click的中止执行。
 
-A :exc:`ClickException` has a :meth:`~ClickException.show` method which
-can render an error message to stderr or the given file object.  If you
-want to use the exception yourself for doing something check the API docs
-about what else they provide.
+ :exc:`ClickException` 有一个 :meth:`~ClickException.show` 方法可以将错误消息呈现给stderr或给定的文件对象。如果你想自己使用这个异常做一些检查他们提供的API文档。
 
-The following common subclasses exist:
+以下常见存在的子类：
 
-*   :exc:`UsageError` to inform the user that something went wrong.
-*   :exc:`BadParameter` to inform the user that something went wrong with
-    a specific parameter.  These are often handled internally in Click and
-    augmented with extra information if possible.  For instance if those
-    are raised from a callback Click will automatically augment it with
-    the parameter name if possible.
-*   :exc:`FileError` this is an error that is raised by the
-    :exc:`FileType` if Click encounters issues opening the file.
+*   :exc:`UsageError` 通知用户出了问题。
+*   :exc:`BadParameter` 通知用户特定参数出现问题。这些通常在Click处理内部处理，如果可能的话，增加额外的信息。例如，如果这些是从回调引发Click,将自动增加它的参数名称。
+*   :exc:`FileError` 这是一个错误，
+    :exc:`FileType` Click遇到打开文件问题时会出现

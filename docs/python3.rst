@@ -1,4 +1,4 @@
-Python 3 Support
+Python 3 支持
 ================
 
 .. currentmodule:: click

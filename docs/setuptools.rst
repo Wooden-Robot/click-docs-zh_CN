@@ -96,7 +96,7 @@ Setuptools 集成
             __init__.py
             yourscript.py
 
-在这种情况下，在 ``setup.py`` 文件中，使用 ``pacckages`` 代替 ``py_modules`` ，同时自动包会找到 setuptools的支持。除此之外，还建议它含其他包数据。
+在这种情况下，在 ``setup.py`` 文件中，使用 ``packages`` 代替 ``py_modules`` ，同时自动包会找到 setuptools的支持。除此之外，还建议它含其他包数据。
 
 如下这些是对 ``setup.py`` 文件内容的修改::
 
